@@ -42,3 +42,8 @@ df <- df %>%
   mutate(across(where(is.numeric), remove_outliers))  # Apply to numeric columns
 
 
+#Fill missing values again after removing outliers
+df <- df %>% 
+  mutate(across(where(is.numeric), ~ ifelse(is.na(.), zoo::na.approx(.), .)))
+
+
