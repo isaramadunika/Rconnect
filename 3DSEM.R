@@ -19,8 +19,11 @@ head(df)
 str(df)
 summary(df)
 
+# Convert Date to Date format and ensure proper ordering
+df$Date <- as.Date(df$Date, format = "%m/%d/%Y")
+
 # Check for missing values
-colSums(is.na(df))
+colSums(is.na(df))  # Count of missing values in each column
 
 # Apply to numerical columns
 data_daily <- data_daily %>% mutate_if(is.numeric, remove_outliers)
