@@ -38,4 +38,7 @@ remove_outliers <- function(x) {
   return(x)
 }
 
+df <- df %>%
+  mutate(across(where(is.numeric), remove_outliers))  # Apply to numeric columns
+
 
