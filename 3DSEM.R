@@ -29,8 +29,13 @@ colSums(is.na(df))  # Count of missing values in each column
 df <- df %>% 
   mutate(across(where(is.numeric), ~ ifelse(is.na(.), zoo::na.approx(.), .)))  # Interpolate missing numeric values
 
-# Apply to numerical columns
-data_daily <- data_daily %>% mutate_if(is.numeric, remove_outliers)
-data_daily <- data_daily %>% mutate_all(~ifelse(is.na(.), zoo::na.approx(.), .))
+#Remove outliers using IQR (Interquartile Range) method
+remove_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  x[x < (Q1 - 1.5 * IQR) | x > (Q3 + 1.5 * IQR)] <- NA
+  return(x)
+}
 
 
