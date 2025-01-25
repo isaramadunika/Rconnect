@@ -74,14 +74,21 @@ ts_data <- ts(train_data$Price, frequency = 252) # Assuming 252 trading days in 
 
 # Fit the ARIMA model
 model <- auto.arima(ts_data)
-
 summary(model)
 
-# Forecasting till 2030 (estimate number of future trading days)
+# Forecast until 2030
 forecast_horizon <- (2030 - max(as.numeric(format(stock_data$Date, "%Y")))) * 252
 forecast <- forecast(model, h = forecast_horizon)
 
-# Plot the forecast
+# Plot forecast
 autoplot(forecast) +
-  labs(title = "Stock Price Forecast", x = "Time", y = "Price")
+  labs(
+    title = "Stock Price Forecast Until 2030",
+    subtitle = "ARIMA Model Predictions with Confidence Intervals",
+    x = "Year",
+    y = "Stock Price (LKR)"
+  ) +
+  theme_minimal()
+
+
 
