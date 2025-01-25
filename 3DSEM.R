@@ -6,44 +6,48 @@ library(caret)
 library(prophet)
 
 # Read the datasets
-data_daily <- read.csv("C:\\Users\\shard\\Desktop\\R_Studio_Connect\\TeleCom_2009_2023_Daily.csv")
+stock_data <- read.csv("C:\\Users\\shard\\Desktop\\R_Studio_Connect\\TeleCom_2009_2023_Daily.csv", stringsAsFactors = FALSE)
+head(stock_data)
 
-#Cheake the dataset 
-df = data.frame(data_daily)
-df
+# Convert Date column
+stock_data$Date <- as.Date(stock_data$Date, format = "%m/%d/%Y")
 
-#Print the head 
-head(df)
+# Convert numeric columns
+stock_data <- stock_data %>%
+  mutate(
+    Price = as.numeric(Price),
+    Open = as.numeric(Open),
+    High = as.numeric(High),
+    Low = as.numeric(Low),
+    Vol. = as.numeric(gsub("K", "", Vol.)) * 1000, # Convert volume to numeric
+    Change.. = as.numeric(gsub("%", "", Change..)) # Remove percentage sign
+  )
 
-# Inspect structure and summary
-str(df)
-summary(df)
+# Check for missing values and handle them
+stock_data <- na.omit(stock_data)
+summary(stock_data)
 
-# Convert Date to Date format and ensure proper ordering
-df$Date <- as.Date(df$Date, format = "%m/%d/%Y")
+ggplot(stock_data, aes(x = Date, y = Price)) +
+  geom_line(color = "blue") +
+  labs(title = "Stock Price Over Time", x = "Date", y = "Price")
 
-# Check for missing values
-colSums(is.na(df))  # Count of missing values in each column
+ggplot(stock_data, aes(x = Price)) +
+  geom_histogram(binwidth = 5, fill = "lightblue", color = "black") +
+  labs(title = "Price Distribution", x = "Price", y = "Frequency")
 
-# Fill missing values (if any)
-df <- df %>% 
-  mutate(across(where(is.numeric), ~ ifelse(is.na(.), zoo::na.approx(.), .)))  # Interpolate missing numeric values
+correlation_matrix <- cor(stock_data %>% select(-Date))
+print(correlation_matrix)
 
-#Remove outliers using IQR (Interquartile Range) method
-remove_outliers <- function(x) {
-  Q1 <- quantile(x, 0.25, na.rm = TRUE)
-  Q3 <- quantile(x, 0.75, na.rm = TRUE)
-  IQR <- Q3 - Q1
-  x[x < (Q1 - 1.5 * IQR) | x > (Q3 + 1.5 * IQR)] <- NA
-  return(x)
-}
+set.seed(123)
+train_index <- createDataPartition(stock_data$Price, p = 0.8, list = FALSE)
+train_data <- stock_data[train_index, ]
+test_data <- stock_data[-train_index, ]
 
-df <- df %>%
-  mutate(across(where(is.numeric), remove_outliers))  # Apply to numeric columns
+# Convert the Price column to a time series object
+ts_data <- ts(train_data$Price, frequency = 252) # Assuming 252 trading days in a year
 
+# Fit the ARIMA model
+model <- auto.arima(ts_data)
 
-#Fill missing values again after removing outliers
-df <- df %>% 
-  mutate(across(where(is.numeric), ~ ifelse(is.na(.), zoo::na.approx(.), .)))
-
+summary(model)
 
