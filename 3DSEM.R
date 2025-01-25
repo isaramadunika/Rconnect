@@ -27,13 +27,39 @@ stock_data <- stock_data %>%
 stock_data <- na.omit(stock_data)
 summary(stock_data)
 
-ggplot(stock_data, aes(x = Date, y = Price)) +
-  geom_line(color = "blue") +
-  labs(title = "Stock Price Over Time", x = "Date", y = "Price")
-
 ggplot(stock_data, aes(x = Price)) +
-  geom_histogram(binwidth = 5, fill = "lightblue", color = "black") +
-  labs(title = "Price Distribution", x = "Price", y = "Frequency")
+  geom_histogram(binwidth = 10, fill = "lightblue", color = "black") +
+  labs(
+    title = "Price Distribution of SLT Stock",
+    subtitle = "Histogram showing the frequency of different price ranges",
+    x = "Stock Price (LKR)",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, color = "gray50"),
+    axis.title = element_text(face = "bold")
+  )
+
+ggplot(stock_data, aes(x = Date, y = Price)) +
+  geom_line(color = "blue", size = 1) +
+  geom_smooth(method = "loess", se = FALSE, color = "red", linetype = "dashed") +
+  labs(
+    title = "SLT Stock Price Over Time",
+    subtitle = "Line chart displaying the price trend over the years",
+    x = "Date",
+    y = "Stock Price (LKR)"
+  ) +
+  theme_light() +
+  theme(
+    text = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, color = "gray50"),
+    axis.title = element_text(face = "bold")
+  )
+
 
 correlation_matrix <- cor(stock_data %>% select(-Date))
 print(correlation_matrix)
@@ -50,4 +76,12 @@ ts_data <- ts(train_data$Price, frequency = 252) # Assuming 252 trading days in 
 model <- auto.arima(ts_data)
 
 summary(model)
+
+# Forecasting till 2030 (estimate number of future trading days)
+forecast_horizon <- (2030 - max(as.numeric(format(stock_data$Date, "%Y")))) * 252
+forecast <- forecast(model, h = forecast_horizon)
+
+# Plot the forecast
+autoplot(forecast) +
+  labs(title = "Stock Price Forecast", x = "Time", y = "Price")
 
