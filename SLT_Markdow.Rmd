@@ -112,16 +112,9 @@ model <- auto.arima(ts_data)
 forecast_periods <- (2030 - 2023) * 252  # Number of trading days until 2030
 future_forecast <- forecast(model, h = forecast_periods)
 
-# Plot the forecast
-plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
-     xlab = "Time", ylab = "Price")
 
 # Print model summary
 print(summary(model))
-
-# Display the forecast plot and model summary
-plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
-     xlab = "Time", ylab = "Price")
 
 # Print model summary
 print(summary(model))
@@ -372,7 +365,7 @@ ggplot(monthly_summary_df, aes(x = Month, y = Year, fill = Mean_Price)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Save the full table to a CSV file
+### Save the full table to a CSV file
 write.csv(daily_stock_data, "SLT_Monthly_Summery_Data_2023_2030.csv", row.names = FALSE)
 ```
 
