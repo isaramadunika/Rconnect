@@ -1,4 +1,3 @@
-# Load necessary libraries
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -105,24 +104,12 @@ model <- auto.arima(ts_data)
 forecast_periods <- (2030 - 2023) * 252  # Number of trading days until 2030
 future_forecast <- forecast(model, h = forecast_periods)
 
-# Plot the forecast
-plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
-     xlab = "Time", ylab = "Price")
 
 # Print model summary
 print(summary(model))
 
-# Display the forecast plot and model summary
-plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
-     xlab = "Time", ylab = "Price")
-
 # Print model summary
 print(summary(model))
-
-# Plot the forecast with confidence intervals
-plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
-     xlab = "Year", ylab = "Price",
-     col.main = "blue", col.lab = "darkgreen")
 
 
 # Convert forecast to dataframe for ggplot
@@ -204,19 +191,6 @@ last_year_df <- data.frame(
   Upper = upper_95
 )
 
-ggplot(last_year_df, aes(x = Time)) +
-  geom_line(aes(y = Forecast, color = "Forecast"), size = 1) +
-  geom_ribbon(aes(ymin = Lower, ymax = Upper, fill = "95% CI"), alpha = 0.2) +
-  scale_color_manual(values = c("Forecast" = "blue")) +
-  scale_fill_manual(values = c("95% CI" = "gray70")) +
-  labs(title = "Detailed 2030 Stock Price Forecast",
-       subtitle = "With 95% Confidence Intervals",
-       x = "Trading Days in 2030",
-       y = "Predicted Price",
-       color = "Legend",
-       fill = "Confidence Interval") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
 
 
 # Create yearly summary table
@@ -275,10 +249,10 @@ forecast_data <- data.frame(
   Type = "Forecast"
 )
 # Combine the datasets
-daily_stock_data <- rbind(
-  actual_2023[, c("Date", "Price", "Type")],
-  forecast_data[, c("Date", "Price", "Type")]
-)
+#daily_stock_data <- rbind(
+#  actual_2023[, c("Date", "Price", "Type")],
+# forecast_data[, c("Date", "Price", "Type")]
+#)
 
 # Print the combined table
 print("Daily Stock Price Data (2023-2030):")
@@ -383,21 +357,6 @@ ggplot(monthly_summary_df, aes(x = Month, y = Year, fill = Mean_Price)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Save the full table to a CSV file
+### Save the full table to a CSV file
 write.csv(daily_stock_data, "SLT_Monthly_Summery_Data_2023_2030.csv", row.names = FALSE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
