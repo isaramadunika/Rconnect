@@ -124,8 +124,6 @@ plot(future_forecast, main = "TeleCom Stock Price Forecast to 2030",
      xlab = "Year", ylab = "Price",
      col.main = "blue", col.lab = "darkgreen")
 
-# Create a more detailed forecast plot with ggplot2
-library(ggplot2)
 
 # Convert forecast to dataframe for ggplot
 forecast_df <- data.frame(
@@ -276,6 +274,19 @@ forecast_data <- data.frame(
   Upper = future_forecast$upper[,2],
   Type = "Forecast"
 )
+# Combine the datasets
+daily_stock_data <- rbind(
+  actual_2023[, c("Date", "Price", "Type")],
+  forecast_data[, c("Date", "Price", "Type")]
+)
+
+# Print the combined table
+print("Daily Stock Price Data (2023-2030):")
+print(head(daily_stock_data, 20))  # Show the first 20 rows as a preview
+
+# Save the full table to a CSV file
+write.csv(daily_stock_data, "SLT_Daily_Stock_Data_2023_2030.csv", row.names = FALSE)
+
 
 # Create the enhanced plot
 ggplot() +
@@ -320,6 +331,8 @@ forecast_data <- data.frame(
   Type = "Forecast"
 )
 
+
+
 # Combine the datasets
 daily_stock_data <- rbind(
   actual_2023[, c("Date", "Price", "Type")],
@@ -339,6 +352,8 @@ monthly_summary <- aggregate(Price ~ YearMonth, data = daily_stock_data,
                                Max = max(x)
                              ))
 
+
+
 # Convert the results to a more readable format
 monthly_summary_df <- data.frame(
   YearMonth = monthly_summary$YearMonth,
@@ -347,12 +362,13 @@ monthly_summary_df <- data.frame(
   Max_Price = round(monthly_summary$Price[,3], 2)
 )
 
+
+
 # Print the monthly summary
 print("Monthly Summary of Stock Prices (2023-2030):")
 print(head(monthly_summary_df, 100))  # Show first 20 months as preview
 
-# Create a heatmap of monthly prices
-library(ggplot2)
+
 monthly_summary_df$Year <- substr(monthly_summary_df$YearMonth, 1, 4)
 monthly_summary_df$Month <- substr(monthly_summary_df$YearMonth, 6, 7)
 
@@ -367,10 +383,8 @@ ggplot(monthly_summary_df, aes(x = Month, y = Year, fill = Mean_Price)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-
-
-
-
+# Save the full table to a CSV file
+write.csv(daily_stock_data, "SLT_Monthly_Summery_Data_2023_2030.csv", row.names = FALSE)
 
 
 
